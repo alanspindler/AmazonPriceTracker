@@ -13,9 +13,11 @@ Instalação
     Crie um arquivo chamado email_credentials.json no diretório raiz do projeto com as credenciais do e-mail que será utilizado para enviar as notificações (exemplo de conteúdo abaixo):
 
 {
+
   "Email": "seu_email@example.com",
   
   "Password": "sua_senha"
+  
 }
 
     Crie um arquivo chamado email_recipients.txt no diretório raiz do projeto contendo uma lista de e-mails que receberão as notificações. Coloque um e-mail por linha, como no exemplo abaixo:
