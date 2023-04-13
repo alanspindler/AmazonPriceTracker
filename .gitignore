@@ -1,0 +1,16 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/AmazonPriceTracker/FileContentIndex
+/.vs/AmazonPriceTracker/v17/TestStore/0
+/.vs/AmazonPriceTracker/v17
+/.vs/ProjectEvaluation
+/AmazonPriceTracker/bin/Debug/net6.0
+/AmazonPriceTracker/obj/Debug/net6.0
+/AmazonPriceTracker/obj
+/AmazonPriceTracker/products.txt
+/AmazonPriceTracker/email_recipients.txt
+/AmazonPriceTracker/email_credentials.json
+/.vs/AmazonPriceTracker/DesignTimeBuild
+/AmazonPriceTracker/bin/Release
