@@ -54,6 +54,8 @@ Após seguir estas etapas, o navegador do Playwright estará instalado e pronto 
 
 Pelo projeto compilado
 
+https://github.com/alanspindler/AmazonPriceTracker/blob/main/AmazonPriceTracker/Projecto%20Compilado.zip
+
     Necessita do PowerShell 6.0
 
     Descompacte o arquivo Projeto Compilado.zip.
