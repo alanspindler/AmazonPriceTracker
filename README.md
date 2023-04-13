@@ -21,14 +21,10 @@ json
 
     Crie um arquivo chamado email_recipients.txt no diretório raiz do projeto contendo uma lista de e-mails que receberão as notificações. Coloque um e-mail por linha, como no exemplo abaixo:
 
-graphql
-
 destinatario1@example.com
 destinatario2@example.com
 
     Crie um arquivo chamado products.txt no diretório raiz do projeto contendo uma lista de URLs dos produtos que você deseja rastrear e os respectivos preços-alvo. Coloque um produto por linha, separando a URL e o preço-alvo por vírgula, como no exemplo abaixo:
-
-bash
 
 https://www.amazon.com.br/Produto1/dp/XXXXX, 100
 https://www.amazon.com.br/Produto2/dp/XXXXX, 150
@@ -41,13 +37,9 @@ Instalando o navegador do Playwright
     Abra o Powershell 6.0 ou superior.
     Navegue até a pasta de compilação do projeto. Substitua <PATH_TO_BUILD_FOLDER> pelo caminho correto da pasta de compilação no seu computador.
 
-bash
-
 cd "<PATH_TO_BUILD_FOLDER>"
 
 Exemplo:
-
-bash
 
 cd "C:\AmazonPriceTracker\AmazonPriceTracker\bin\Debug\net6.0"
 
@@ -56,6 +48,7 @@ cd "C:\AmazonPriceTracker\AmazonPriceTracker\bin\Debug\net6.0"
 pwsh playwright.ps1 install
 
 Após seguir estas etapas, o navegador do Playwright estará instalado e pronto para ser usado no projeto.
+
 Pelo projeto compilado
 
     Necessita do PowerShell 6.0
