@@ -63,20 +63,23 @@ class AmazonPriceTracker
             try
             {
                 await smtpClient.SendMailAsync(mailMessage);
-                Log($"E-mail enviado para: {mailMessage.To[0].Address}");
+                string recipientsList = string.Join(", ", recipients);
+                Log($"E-mail enviado para: {recipientsList}");
             }
             catch (SmtpException ex)
             {
-                Log($"Erro ao enviar e-mail:\nCódigo de status: {ex.StatusCode}\nMensagem de erro: {ex.Message}\nMensagem de erro interna: {ex.InnerException?.Message}");
+                string recipientsList = string.Join(", ", recipients);
+                Log($"Erro ao enviar e-mail para {recipientsList}:\nCódigo de status: {ex.StatusCode}\nMensagem de erro: {ex.Message}\nMensagem de erro interna: {ex.InnerException?.Message}");
             }
+
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Erro ao enviar e-mail:");
-            Console.WriteLine($"Mensagem de erro: {ex.Message}");
+            Log("Erro ao enviar e-mail:");
+            Log($"Mensagem de erro: {ex.Message}");
             if (ex.InnerException != null)
             {
-                Console.WriteLine($"Mensagem de erro interna: {ex.InnerException.Message}");
+                Log($"Mensagem de erro interna: {ex.InnerException.Message}");
             }
         }
     }
@@ -89,6 +92,7 @@ class AmazonPriceTracker
     private static List<(string, decimal)> ReadProducts()
     {
         return File.ReadAllLines("products.txt")
+            .Where(line => !string.IsNullOrWhiteSpace(line) && !line.TrimStart().StartsWith("#"))
             .Select(line =>
             {
                 var parts = line.Split(',', StringSplitOptions.RemoveEmptyEntries);
@@ -99,42 +103,46 @@ class AmazonPriceTracker
 
     public static async Task Main()
     {
-        var productList = ReadProducts();
-
-        using var playwright = await Playwright.CreateAsync();
-        var browser = await playwright.Chromium.LaunchAsync(new() { Headless = false });
-        var context = await browser.NewContextAsync();
-        var page = await context.NewPageAsync();
-
-        foreach (var (productUrl, targetPrice) in productList)
+        while (true)
         {
-            try
-            {
-                // Verificar o preço do produto
-                var currentPrice = await GetProductPriceAsync(page, productUrl);
+            var productList = ReadProducts();
 
-                if (currentPrice.HasValue && currentPrice.Value <= targetPrice)
-                {
-                    var subject = $"Alerta de preço: Produto abaixo de R${targetPrice}";
-                    var body = $"O produto na URL {productUrl} está com um preço de R${currentPrice.Value}.";
-                    await SendEmail(subject, body);
-                    Log("E-mail enviado.");
-                }
-                else
-                {
-                    Log($"O preço do produto não atingiu o valor desejado. Preço atual: R${currentPrice.Value}");
-                }
-            }
-            catch (Exception ex)
+            using var playwright = await Playwright.CreateAsync();
+            var browser = await playwright.Chromium.LaunchAsync(new() { Headless = true });
+            var context = await browser.NewContextAsync();
+            var page = await context.NewPageAsync();
+
+            foreach (var (productUrl, targetPrice) in productList)
             {
-                Log($"Erro: {ex.Message}");
-                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
-                var screenshotPath = $"ErroAmazon{timestamp}.jpg";
-                await System.IO.File.WriteAllBytesAsync(screenshotPath, await page.ScreenshotAsync(new PageScreenshotOptions { Type = ScreenshotType.Jpeg }));
-                Log($"Screenshot do erro salvo em {screenshotPath}");
+                try
+                {
+                    // Verificar o preço do produto
+                    var currentPrice = await GetProductPriceAsync(page, productUrl);
+
+                    if (currentPrice.HasValue && currentPrice.Value <= targetPrice)
+                    {
+                        var subject = $"Alerta de preço: Produto abaixo de R${targetPrice}";
+                        var body = $"O produto na URL {productUrl} está com um preço de R${currentPrice.Value}.";
+                        await SendEmail(subject, body);
+                    }
+                    else
+                    {
+                        Log($"O preço do produto não atingiu o valor desejado. Preço atual: R${currentPrice.Value}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log($"Erro: {ex.Message}");
+                    var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+                    var screenshotPath = $"ErroAmazon{timestamp}.jpg";
+                    await System.IO.File.WriteAllBytesAsync(screenshotPath, await page.ScreenshotAsync(new PageScreenshotOptions { Type = ScreenshotType.Jpeg }));
+                    Log($"Screenshot do erro salvo em {screenshotPath}");
+                }
             }
+            await browser.CloseAsync();
+            await browser.DisposeAsync();
+            // Aguarde 30 minutos antes de executar a função novamente
+            await Task.Delay(TimeSpan.FromMinutes(30));
         }
-        await browser.CloseAsync();
     }
 }
-
