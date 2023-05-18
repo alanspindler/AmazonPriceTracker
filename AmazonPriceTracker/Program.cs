@@ -12,12 +12,15 @@ class AmazonPriceTracker
 
         // Substitua ".price-selector" pelo seletor CSS correto do preço do produto na Amazon
         var priceElement = await page.QuerySelectorAsync("[class=a-price-whole] >> nth=1");
-        var priceText = await priceElement.InnerTextAsync();
-
-        // Analise o texto do preço para obter o valor decimal
-        if (decimal.TryParse(priceText, out decimal price))
+        if (priceElement != null)
         {
-            return price;
+            var priceText = await priceElement.InnerTextAsync();
+
+            // Analise o texto do preço para obter o valor decimal
+            if (decimal.TryParse(priceText, out decimal price))
+            {
+                return price;
+            }
         }
         return null;
     }
@@ -124,6 +127,10 @@ class AmazonPriceTracker
                         var subject = $"Alerta de preço: Produto abaixo de R${targetPrice}";
                         var body = $"O produto na URL {productUrl} está com um preço de R${currentPrice.Value}.";
                         await SendEmail(subject, body);
+                    }
+                    else if (!currentPrice.HasValue)
+                    {
+                        Log($"O produto na URL {productUrl} está sem preço (possivelmente fora de estoque).");
                     }
                     else
                     {
