@@ -40,16 +40,14 @@ Instalando o navegador do Playwright
     Faça o build da solução.
     Abra o Powershell 6.0 ou superior.
     Navegue até a pasta de compilação do projeto. Substitua <PATH_TO_BUILD_FOLDER> pelo caminho correto da pasta de compilação no seu computador.
+    cd "<PATH_TO_BUILD_FOLDER>"
+    Exemplo:
 
-cd "<PATH_TO_BUILD_FOLDER>"
-
-Exemplo:
-
-cd "C:\AmazonPriceTracker\AmazonPriceTracker\bin\Debug\net6.0"
+    cd "C:\AmazonPriceTracker\AmazonPriceTracker\bin\Debug\net6.0"
 
     Execute o comando a seguir para instalar o navegador do Playwright:
 
-pwsh playwright.ps1 install
+    pwsh playwright.ps1 install
 
 Após seguir estas etapas, o navegador do Playwright estará instalado e pronto para ser usado no projeto.
 
