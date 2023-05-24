@@ -5,17 +5,18 @@ using Microsoft.Playwright;
 using File = System.IO.File;
 
 class AmazonPriceTracker
-{
+{    
     private static async Task<decimal?> GetProductPriceAsync(IPage page, string url)
     {
         await page.GotoAsync(url);
 
-        // Substitua ".price-selector" pelo seletor CSS correto do preço do produto na Amazon
-        var priceElement = await page.QuerySelectorAsync("[class=a-price-whole] >> nth=1");
+        // seleciona o preço apenas dentro da div com id 'apex_desktop'
+        var priceElement = await page.QuerySelectorAsync("#apex_desktop .a-price-whole");
+
         if (priceElement != null)
         {
             var priceText = await priceElement.InnerTextAsync();
-
+            priceText = priceText.Replace("\n", "").Replace(",", "");
             // Analise o texto do preço para obter o valor decimal
             if (decimal.TryParse(priceText, out decimal price))
             {
