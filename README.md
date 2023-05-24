@@ -11,6 +11,7 @@ Instalação
     Clone o repositório ou baixe o projeto para sua máquina local.
     No diretório do projeto, execute dotnet restore para instalar as dependências.
     Crie um arquivo chamado email_credentials.json no diretório raiz do projeto com as credenciais do e-mail que será utilizado para enviar as notificações (exemplo de conteúdo abaixo):
+    Atualmente só é suportado e-mails do Hotmail
 
 {
 
