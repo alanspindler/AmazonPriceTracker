@@ -123,7 +123,7 @@ class AmazonPriceTracker
                     // Verificar o preço do produto
                     var currentPrice = await GetProductPriceAsync(page, productUrl);
 
-                    if (currentPrice.HasValue && currentPrice.Value <= targetPrice)
+                    if (currentPrice.HasValue && currentPrice.Value < targetPrice)
                     {
                         var subject = $"Alerta de preço: Produto abaixo de R${targetPrice}";
                         var body = $"O produto na URL {productUrl} está com um preço de R${currentPrice.Value}.";
