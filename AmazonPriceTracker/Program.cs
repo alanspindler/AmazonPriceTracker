@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Mail;
 using System.Text.Json;
+using System.Xml.Linq;
 using Microsoft.Playwright;
 using File = System.IO.File;
 
@@ -121,21 +122,22 @@ class AmazonPriceTracker
                 try
                 {
                     // Verificar o preço do produto
-                    var currentPrice = await GetProductPriceAsync(page, productUrl);
-
+                    var currentPrice = await GetProductPriceAsync(page, productUrl);                    
+                    var textProductName = await page.Locator("[class='a-size-large product-title-word-break']").TextContentAsync();
+                    string productName = textProductName.ToString().Trim();
                     if (currentPrice.HasValue && currentPrice.Value < targetPrice)
                     {
-                        var subject = $"Alerta de preço: Produto abaixo de R${targetPrice}";
-                        var body = $"O produto na URL {productUrl} está com um preço de R${currentPrice.Value}.";
+                        var subject = $"Alerta de preço: Produto {productName} abaixo de R${targetPrice}";
+                        var body = $"O produto {productName} na URL {productUrl} está com um preço de R${currentPrice.Value}.";
                         await SendEmail(subject, body);
                     }
                     else if (!currentPrice.HasValue)
                     {
-                        Log($"O produto na URL {productUrl} está sem preço (possivelmente fora de estoque).");
+                        Log($"O produto {productName} na URL {productUrl} está sem preço (possivelmente fora de estoque).");
                     }
                     else
                     {
-                        Log($"O preço do produto não atingiu o valor desejado. Preço atual: R${currentPrice.Value}");
+                        Log($"O preço do produto {productName} não atingiu o valor desejado. Preço atual: R${currentPrice.Value}");
                     }
                 }
                 catch (Exception ex)
