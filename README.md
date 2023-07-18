@@ -1,6 +1,7 @@
 Amazon Price Tracker
 
-Este projeto é um rastreador de preços de produtos da Amazon, desenvolvido em C# e utilizando o Playwright. Ele verifica se o preço atual de uma lista de produtos está abaixo de um determinado valor e, se estiver, envia um e-mail de alerta para uma lista de destinatários.
+Este projeto é um rastreador de preços de produtos da Amazon, desenvolvido em C# e utilizando o Playwright. Ele verifica se o preço atual de uma lista de produtos está abaixo de um determinado valor e, se estiver, envia um e-mail de alerta para uma lista de destinatários. O processo é repetido a cada 30 minutos.
+
 Requisitos
 
     .NET 6.0 ou superior
@@ -75,8 +76,7 @@ Funcionalidades
 
 Limitações
 
-    A implementação atual é específica para a Amazon Brasil.
-    O rastreamento de preços é feito de forma manual, ou seja, é necessário executar o programa toda vez que desejar verificar os preços dos produtos.
+    A implementação atual é específica para a Amazon Brasil.    
 
 Contribuindo
 
