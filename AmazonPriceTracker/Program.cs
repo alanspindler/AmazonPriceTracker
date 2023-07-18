@@ -32,6 +32,18 @@ class AmazonPriceTracker
         var json = File.ReadAllText("email_credentials.json");
         var credentials = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
 
+        if (credentials == null)
+        {
+            Log("Falha ao deserializar as credenciais.");
+            return (string.Empty, string.Empty); // retorna um valor padrão
+        }
+
+        if (!credentials.ContainsKey("email") || !credentials.ContainsKey("password"))
+        {
+            Log("Faltando 'email' ou 'password' nas credenciais.");
+            return (string.Empty, string.Empty); // retorna um valor padrão
+        }
+
         return (credentials["email"], credentials["password"]);
     }
 
@@ -124,7 +136,7 @@ class AmazonPriceTracker
                     // Verificar o preço do produto
                     var currentPrice = await GetProductPriceAsync(page, productUrl);                    
                     var textProductName = await page.Locator("[class='a-size-large product-title-word-break']").TextContentAsync();
-                    string productName = textProductName.ToString().Trim();
+                    string productName = textProductName != null ? textProductName.ToString().Trim() : string.Empty;
                     if (currentPrice.HasValue && currentPrice.Value < targetPrice)
                     {
                         var subject = $"Alerta de preço: Produto {productName} abaixo de R${targetPrice}";
