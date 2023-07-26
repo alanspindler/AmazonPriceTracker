@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Mail;
 using System.Text.Json;
 using System.Xml.Linq;
@@ -6,26 +7,52 @@ using Microsoft.Playwright;
 using File = System.IO.File;
 
 class AmazonPriceTracker
-{    
+{
+
     private static async Task<decimal?> GetProductPriceAsync(IPage page, string url)
     {
         await page.GotoAsync(url);
 
-        // seleciona o preço apenas dentro da div com id 'apex_desktop'
-        var priceElement = await page.QuerySelectorAsync("#apex_desktop .a-price-whole");
-
-        if (priceElement != null)
+        // Verifica se o URL é da Amazon
+        if (url.Contains("amazon.com.br"))
         {
-            var priceText = await priceElement.InnerTextAsync();
-            priceText = priceText.Replace("\n", "").Replace(",", "");
-            // Analise o texto do preço para obter o valor decimal
-            if (decimal.TryParse(priceText, out decimal price))
+            var priceElement = await page.QuerySelectorAsync("#apex_desktop .a-price-whole");
+
+            if (priceElement != null)
             {
-                return price;
+                var priceText = await priceElement.InnerTextAsync();
+                priceText = priceText.Replace("\n", "").Replace(",", "");
+
+                if (decimal.TryParse(priceText, out decimal price))
+                {
+                    return price;
+                }
             }
         }
+        // Verifica se o URL é da Kabum
+        else if (url.Contains("kabum.com.br"))
+        {
+            string? priceElement = null;
+            int elementos = await page.Locator("[class='sc-d6a30908-1 eodqMr finalPrice']").CountAsync();
+            if (elementos > 0)
+            {
+                priceElement = await page.Locator("[class='sc-d6a30908-1 eodqMr finalPrice']").TextContentAsync();
+            }
+
+            if (priceElement != null)
+            {
+                priceElement = priceElement.Replace("R$", "").Replace(".", "").Trim();
+
+                if (decimal.TryParse(priceElement, out decimal price))
+                {
+                    return price;
+                }
+            }
+        }
+
         return null;
     }
+
 
     private static (string Email, string Password) ReadEmailCredentials()
     {
@@ -134,8 +161,16 @@ class AmazonPriceTracker
                 try
                 {
                     // Verificar o preço do produto
-                    var currentPrice = await GetProductPriceAsync(page, productUrl);                    
-                    var textProductName = await page.Locator("[class='a-size-large product-title-word-break']").TextContentAsync();
+                    var currentPrice = await GetProductPriceAsync(page, productUrl);
+                    string? textProductName = null;
+                    if (productUrl.Contains("amazon.com.br"))
+                    {
+                        textProductName = await page.Locator("[class='a-size-large product-title-word-break']").TextContentAsync();
+                    }
+                    else if (productUrl.Contains("kabum.com.br"))
+                    {
+                        textProductName = await page.Locator("[class='sc-9367f383-6 bsXnVb']").TextContentAsync();
+                    }
                     string productName = textProductName != null ? textProductName.ToString().Trim() : string.Empty;
                     if (currentPrice.HasValue && currentPrice.Value < targetPrice)
                     {
