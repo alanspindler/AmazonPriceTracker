@@ -77,12 +77,13 @@ class AmazonPriceTracker
     private static List<string> ReadEmailRecipients()
     {
         return File.ReadAllLines("email_recipients.txt").ToList();
-    }
+    }  
 
     public static async Task SendEmail(string subject, string body)
     {
         var (email, password) = ReadEmailCredentials();
         var recipients = ReadEmailRecipients();
+
         try
         {
             using MailMessage mailMessage = new()
@@ -98,7 +99,7 @@ class AmazonPriceTracker
                 mailMessage.To.Add(new MailAddress(recipient));
             }
 
-            using SmtpClient smtpClient = new("smtp.office365.com", 587)
+            using SmtpClient smtpClient = new SmtpClient("smtp.office365.com", 587)
             {
                 Credentials = new NetworkCredential(email, password),
                 EnableSsl = true
@@ -115,7 +116,6 @@ class AmazonPriceTracker
                 string recipientsList = string.Join(", ", recipients);
                 Log($"Erro ao enviar e-mail para {recipientsList}:\nCódigo de status: {ex.StatusCode}\nMensagem de erro: {ex.Message}\nMensagem de erro interna: {ex.InnerException?.Message}");
             }
-
         }
         catch (Exception ex)
         {
@@ -169,7 +169,7 @@ class AmazonPriceTracker
                     }
                     else if (productUrl.Contains("kabum.com.br"))
                     {
-                        textProductName = await page.Locator("[class='sc-9367f383-6 bsXnVb']").TextContentAsync();
+                        textProductName = await page.Locator("[class='sc-89bddf0f-6 dFlhql']").TextContentAsync();
                     }
                     string productName = textProductName != null ? textProductName.ToString().Trim() : string.Empty;
                     if (currentPrice.HasValue && currentPrice.Value < targetPrice)
