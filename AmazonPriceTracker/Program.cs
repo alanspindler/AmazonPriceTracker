@@ -152,8 +152,8 @@ class AmazonPriceTracker
             var productList = ReadProducts();
 
             using var playwright = await Playwright.CreateAsync();
-            var browser = await playwright.Chromium.LaunchAsync(new() { Headless = true });
-            var context = await browser.NewContextAsync();
+            var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
+            var context = await browser.NewContextAsync(new() { UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36" });
             var page = await context.NewPageAsync();
 
             foreach (var (productUrl, targetPrice) in productList)
