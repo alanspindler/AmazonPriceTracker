@@ -29,11 +29,11 @@ class AmazonPriceTracker
         // Verifica se o URL é da Kabum
         else if (url.Contains("kabum.com.br"))
         {
-            string? priceElement = null;
-            int elementos = await page.Locator("[class='sc-d6a30908-1 eodqMr finalPrice']").CountAsync();
+            string? priceElement = null;            
+            int elementos = await page.Locator(".finalPrice").CountAsync();
             if (elementos > 0)
             {
-                priceElement = await page.Locator("[class='sc-d6a30908-1 eodqMr finalPrice']").TextContentAsync();
+                priceElement = await page.Locator(".finalPrice").TextContentAsync();
             }
 
             if (priceElement != null)
@@ -140,7 +140,7 @@ class AmazonPriceTracker
             var productList = ReadProducts();
 
             using var playwright = await Playwright.CreateAsync();
-            var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
+            var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = false });
             var context = await browser.NewContextAsync(new() { UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36" });
             var page = await context.NewPageAsync();
             foreach (var (productUrl, targetPrice) in productList)
@@ -156,7 +156,7 @@ class AmazonPriceTracker
                     }
                     else if (productUrl.Contains("kabum.com.br"))
                     {
-                        textProductName = await page.Locator("[class='sc-89bddf0f-6 dFlhql']").TextContentAsync();
+                        textProductName = await page.Locator("xpath=//div[@id='container-purchase']/div[1]/div/h1").TextContentAsync();
                     }
                     string productName = textProductName != null ? textProductName.ToString().Trim() : string.Empty;
                     if (currentPrice.HasValue && currentPrice.Value < targetPrice)
