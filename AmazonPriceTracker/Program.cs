@@ -1,8 +1,6 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Mail;
 using System.Text.Json;
-using System.Xml.Linq;
 using Microsoft.Playwright;
 using File = System.IO.File;
 
@@ -12,7 +10,6 @@ class AmazonPriceTracker
     private static async Task<decimal?> GetProductPriceAsync(IPage page, string url)
     {
         await page.GotoAsync(url);
-
         // Verifica se o URL é da Amazon
         if (url.Contains("amazon.com.br"))
         {
@@ -49,11 +46,8 @@ class AmazonPriceTracker
                 }
             }
         }
-
         return null;
     }
-
-
     private static (string Email, string Password) ReadEmailCredentials()
     {
         var json = File.ReadAllText("email_credentials.json");
@@ -64,26 +58,23 @@ class AmazonPriceTracker
             Log("Falha ao deserializar as credenciais.");
             return (string.Empty, string.Empty); // retorna um valor padrão
         }
-
         if (!credentials.ContainsKey("email") || !credentials.ContainsKey("password"))
         {
             Log("Faltando 'email' ou 'password' nas credenciais.");
             return (string.Empty, string.Empty); // retorna um valor padrão
         }
-
         return (credentials["email"], credentials["password"]);
     }
 
     private static List<string> ReadEmailRecipients()
     {
         return File.ReadAllLines("email_recipients.txt").ToList();
-    }  
+    }
 
     public static async Task SendEmail(string subject, string body)
     {
         var (email, password) = ReadEmailCredentials();
         var recipients = ReadEmailRecipients();
-
         try
         {
             using MailMessage mailMessage = new()
@@ -93,18 +84,15 @@ class AmazonPriceTracker
                 Body = body,
                 IsBodyHtml = true
             };
-
             foreach (var recipient in recipients)
             {
                 mailMessage.To.Add(new MailAddress(recipient));
             }
-
             using SmtpClient smtpClient = new SmtpClient("smtp.office365.com", 587)
             {
                 Credentials = new NetworkCredential(email, password),
                 EnableSsl = true
             };
-
             try
             {
                 await smtpClient.SendMailAsync(mailMessage);
@@ -155,7 +143,6 @@ class AmazonPriceTracker
             var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
             var context = await browser.NewContextAsync(new() { UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36" });
             var page = await context.NewPageAsync();
-
             foreach (var (productUrl, targetPrice) in productList)
             {
                 try
@@ -184,7 +171,7 @@ class AmazonPriceTracker
                     }
                     else
                     {
-                        Log($"O preço do produto {productName} não atingiu o valor desejado. Preço atual: R${currentPrice.Value}");
+                        Log($"O preço do produto {productName} não atingiu o valor desejado de R${targetPrice}. Preço atual: R${currentPrice.Value}");
                     }
                 }
                 catch (Exception ex)
