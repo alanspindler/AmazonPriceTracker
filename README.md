@@ -53,7 +53,7 @@ For the compiled project
 
 Download Compiled Project
 
-    Requires PowerShell 6.0
+    Requires PowerShell 6.0. You can download it here: https://github.com/PowerShell/PowerShell/releases/download/v7.4.1/PowerShell-7.4.1-win-x64.msi
     Unzip the Compiled Project.zip file.
     Edit the email_credentials.json file with your Hotmail email credentials (username and password).
     Edit the email_recipients.txt file with the list of emails you want to send to.
