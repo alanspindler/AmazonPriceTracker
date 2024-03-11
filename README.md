@@ -17,6 +17,7 @@ Installation
 {
 
   "Email": "your_email@example.com",
+  
   "Password": "your_password"
   
 }
@@ -24,11 +25,13 @@ Installation
     Create a file named email_recipients.txt in the project's root directory containing a list of emails that will receive notifications. Place one email per line, as in the example below:
 	
 recipient1@example.com
+
 recipient2@example.com
 
     Create a file named products.txt in the project's root directory containing a list of product URLs you want to track and their respective target prices. Place one product per line, separating the URL and target price by a comma, as in the example below:
 
 https://www.amazon.com.br/Product1/dp/XXXXX, 100
+
 https://www.amazon.com.br/Product2/dp/XXXXX, 150
 
     Compile and run the project with dotnet build and dotnet run, respectively.
