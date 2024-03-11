@@ -14,8 +14,6 @@ Installation
     Create a file named email_credentials.json in the project's root directory with the email credentials that will be used to send notifications (example content below):
     Currently, only Hotmail emails are supported.
 
-json
-
 {
   "Email": "your_email@example.com",
   "Password": "your_password"
@@ -23,14 +21,14 @@ json
 
     Create a file named email_recipients.txt in the project's root directory containing a list of emails that will receive notifications. Place one email per line, as in the example below:
 
-plaintext
+
 
 recipient1@example.com
 recipient2@example.com
 
     Create a file named products.txt in the project's root directory containing a list of product URLs you want to track and their respective target prices. Place one product per line, separating the URL and target price by a comma, as in the example below:
 
-plaintext
+
 
 https://www.amazon.com.br/Product1/dp/XXXXX, 100
 https://www.amazon.com.br/Product2/dp/XXXXX, 150
@@ -43,19 +41,19 @@ Installing Playwright Browser
     Open PowerShell 6.0 or higher.
     Navigate to the project's build folder. Replace <PATH_TO_BUILD_FOLDER> with the correct path to the build folder on your computer.
 
-powershell
+
 
 cd "<PATH_TO_BUILD_FOLDER>"
 
 Example:
 
-powershell
+
 
 cd "C:\AmazonPriceTracker\AmazonPriceTracker\bin\Debug\net6.0"
 
     Run the following command to install the Playwright browser:
 
-powershell
+
 
 pwsh playwright.ps1 install
 
