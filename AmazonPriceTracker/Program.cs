@@ -10,7 +10,7 @@ class AmazonPriceTracker
     private static async Task<decimal?> GetProductPriceAsync(IPage page, string url)
     {
         await page.GotoAsync(url);
-        // Verifica se o URL é da Amazon
+        // Check if the URL is from Amazon
         if (url.Contains("amazon.com.br"))
         {
             var priceElement = await page.QuerySelectorAsync("#apex_desktop .a-price-whole");
@@ -26,12 +26,12 @@ class AmazonPriceTracker
                 }
             }
         }
-        // Verifica se o URL é da Kabum
+        // Check if the URL is from Kabum
         else if (url.Contains("kabum.com.br"))
         {
-            string? priceElement = null;            
-            int elementos = await page.Locator(".finalPrice").CountAsync();
-            if (elementos > 0)
+            string? priceElement = null;
+            int elements = await page.Locator(".finalPrice").CountAsync();
+            if (elements > 0)
             {
                 priceElement = await page.Locator(".finalPrice").TextContentAsync();
             }
@@ -46,8 +46,21 @@ class AmazonPriceTracker
                 }
             }
         }
+        else if (url.Contains("nike.com"))
+        {
+            string? priceElement = await page.Locator(".product-price >> nth = 0").TextContentAsync();
+            if (priceElement != null)
+            {
+                priceElement = priceElement.Replace("$", "");
+                if (decimal.TryParse(priceElement, out decimal price))
+                {
+                    return price;
+                }
+            }
+        }
         return null;
     }
+
     private static (string Email, string Password) ReadEmailCredentials()
     {
         var json = File.ReadAllText("email_credentials.json");
@@ -55,16 +68,17 @@ class AmazonPriceTracker
 
         if (credentials == null)
         {
-            Log("Falha ao deserializar as credenciais.");
-            return (string.Empty, string.Empty); // retorna um valor padrão
+            Log("Failed to deserialize credentials.");
+            return (string.Empty, string.Empty); // returns a default value
         }
         if (!credentials.ContainsKey("email") || !credentials.ContainsKey("password"))
         {
-            Log("Faltando 'email' ou 'password' nas credenciais.");
-            return (string.Empty, string.Empty); // retorna um valor padrão
+            Log("Missing 'email' or 'password' in credentials.");
+            return (string.Empty, string.Empty); // returns a default value
         }
         return (credentials["email"], credentials["password"]);
     }
+
 
     private static List<string> ReadEmailRecipients()
     {
@@ -77,44 +91,49 @@ class AmazonPriceTracker
         var recipients = ReadEmailRecipients();
         try
         {
-            using MailMessage mailMessage = new()
+            using (MailMessage mailMessage = new MailMessage
             {
                 From = new MailAddress(email),
                 Subject = subject,
                 Body = body,
                 IsBodyHtml = true
-            };
-            foreach (var recipient in recipients)
+            })
             {
-                mailMessage.To.Add(new MailAddress(recipient));
-            }
-            using SmtpClient smtpClient = new SmtpClient("smtp.office365.com", 587)
-            {
-                Credentials = new NetworkCredential(email, password),
-                EnableSsl = true
-            };
-            try
-            {
-                await smtpClient.SendMailAsync(mailMessage);
-                string recipientsList = string.Join(", ", recipients);
-                Log($"E-mail enviado para: {recipientsList}");
-            }
-            catch (SmtpException ex)
-            {
-                string recipientsList = string.Join(", ", recipients);
-                Log($"Erro ao enviar e-mail para {recipientsList}:\nCódigo de status: {ex.StatusCode}\nMensagem de erro: {ex.Message}\nMensagem de erro interna: {ex.InnerException?.Message}");
+                foreach (var recipient in recipients)
+                {
+                    mailMessage.To.Add(new MailAddress(recipient));
+                }
+                using (SmtpClient smtpClient = new SmtpClient("smtp.office365.com", 587)
+                {
+                    Credentials = new NetworkCredential(email, password),
+                    EnableSsl = true
+                })
+                {
+                    try
+                    {
+                        await smtpClient.SendMailAsync(mailMessage);
+                        string recipientsList = string.Join(", ", recipients);
+                        Log($"Email sent to: {recipientsList}");
+                    }
+                    catch (SmtpException ex)
+                    {
+                        string recipientsList = string.Join(", ", recipients);
+                        Log($"Error sending email to {recipientsList}:\nStatus code: {ex.StatusCode}\nError message: {ex.Message}\nInner error message: {ex.InnerException?.Message}");
+                    }
+                }
             }
         }
         catch (Exception ex)
         {
-            Log("Erro ao enviar e-mail:");
-            Log($"Mensagem de erro: {ex.Message}");
+            Log("Error sending email:");
+            Log($"Error message: {ex.Message}");
             if (ex.InnerException != null)
             {
-                Log($"Mensagem de erro interna: {ex.InnerException.Message}");
+                Log($"Inner error message: {ex.InnerException.Message}");
             }
         }
     }
+
 
     private static void Log(string message)
     {
@@ -141,13 +160,13 @@ class AmazonPriceTracker
 
             using var playwright = await Playwright.CreateAsync();
             var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
-            var context = await browser.NewContextAsync(new() { UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36" });
+            var context = await browser.NewContextAsync(new() { UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.4692.99 Safari/537.36" });
             var page = await context.NewPageAsync();
             foreach (var (productUrl, targetPrice) in productList)
             {
                 try
                 {
-                    // Verificar o preço do produto
+                    // Check the product price
                     var currentPrice = await GetProductPriceAsync(page, productUrl);
                     string? textProductName = null;
                     if (productUrl.Contains("amazon.com.br"))
@@ -158,35 +177,40 @@ class AmazonPriceTracker
                     {
                         textProductName = await page.Locator("xpath=//div[@id='container-purchase']/div[1]/div/h1").TextContentAsync();
                     }
+                    else if (productUrl.Contains("nike.com"))
+                    {
+                        textProductName = await page.Locator("[id=pdp_product_title] >> nth = 0").TextContentAsync();
+                    }
                     string productName = textProductName != null ? textProductName.ToString().Trim() : string.Empty;
                     if (currentPrice.HasValue && currentPrice.Value < targetPrice)
                     {
-                        var subject = $"Alerta de preço: Produto {productName} abaixo de R${targetPrice}";
-                        var body = $"O produto {productName} na URL {productUrl} está com um preço de R${currentPrice.Value}.";
+                        var subject = $"Price Alert: Product {productName} below ${targetPrice}";
+                        var body = $"The product {productName} at URL {productUrl} is priced at ${currentPrice.Value}.";
                         await SendEmail(subject, body);
                     }
                     else if (!currentPrice.HasValue)
                     {
-                        Log($"O produto {productName} na URL {productUrl} está sem preço (possivelmente fora de estoque).");
+                        Log($"The product {productName} at URL {productUrl} has no price (possibly out of stock).");
                     }
                     else
                     {
-                        Log($"O preço do produto {productName} não atingiu o valor desejado de R${targetPrice}. Preço atual: R${currentPrice.Value}");
+                        Log($"The price of product {productName} has not reached the desired value of ${targetPrice}. Current price: ${currentPrice.Value}");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log($"Erro: {ex.Message}");
+                    Log($"Error: {ex.Message}");
                     var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
-                    var screenshotPath = $"ErroAmazon{timestamp}.jpg";
+                    var screenshotPath = $"ErrorAmazon{timestamp}.jpg";
                     await System.IO.File.WriteAllBytesAsync(screenshotPath, await page.ScreenshotAsync(new PageScreenshotOptions { Type = ScreenshotType.Jpeg }));
-                    Log($"Screenshot do erro salvo em {screenshotPath}");
+                    Log($"Screenshot of the error saved at {screenshotPath}");
                 }
             }
             await browser.CloseAsync();
             await browser.DisposeAsync();
-            // Aguarde 30 minutos antes de executar a função novamente
+            // Wait for 30 minutes before executing the function again
             await Task.Delay(TimeSpan.FromMinutes(30));
         }
     }
+
 }
