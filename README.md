@@ -1,86 +1,95 @@
 Amazon Price Tracker
 
-Este projeto é um rastreador de preços de produtos da Amazon, desenvolvido em C# e utilizando o Playwright. Ele verifica se o preço atual de uma lista de produtos está abaixo de um determinado valor e, se estiver, envia um e-mail de alerta para uma lista de destinatários. O processo é repetido a cada 30 minutos.
+This project is a product price tracker for Amazon, developed in C# and utilizing Playwright. It checks if the current price of a list of products is below a specified value and, if so, sends an alert email to a list of recipients. The process is repeated every 30 minutes.
 
-Requisitos
+Requirements
 
-    .NET 6.0 ou superior
-    Playwright para .NET
+    .NET 6.0 or higher
+    Playwright for .NET
 
-Instalação
+Installation
 
-    Clone o repositório ou baixe o projeto para sua máquina local.
-    No diretório do projeto, execute dotnet restore para instalar as dependências.
-    Crie um arquivo chamado email_credentials.json no diretório raiz do projeto com as credenciais do e-mail que será utilizado para enviar as notificações (exemplo de conteúdo abaixo):
-    Atualmente só é suportado e-mails do Hotmail
+    Clone the repository or download the project to your local machine.
+    In the project directory, run dotnet restore to install dependencies.
+    Create a file named email_credentials.json in the project's root directory with the email credentials that will be used to send notifications (example content below):
+    Currently, only Hotmail emails are supported.
+
+json
 
 {
-
-  "Email": "seu_email@example.com",
-  
-  "Password": "sua_senha"
-  
+  "Email": "your_email@example.com",
+  "Password": "your_password"
 }
 
-    Crie um arquivo chamado email_recipients.txt no diretório raiz do projeto contendo uma lista de e-mails que receberão as notificações. Coloque um e-mail por linha, como no exemplo abaixo:
+    Create a file named email_recipients.txt in the project's root directory containing a list of emails that will receive notifications. Place one email per line, as in the example below:
 
-destinatario1@example.com
+plaintext
 
-destinatario2@example.com
+recipient1@example.com
+recipient2@example.com
 
-    Crie um arquivo chamado products.txt no diretório raiz do projeto contendo uma lista de URLs dos produtos que você deseja rastrear e os respectivos preços-alvo. Coloque um produto por linha, separando a URL e o preço-alvo por vírgula, como no exemplo abaixo:
+    Create a file named products.txt in the project's root directory containing a list of product URLs you want to track and their respective target prices. Place one product per line, separating the URL and target price by a comma, as in the example below:
 
-https://www.amazon.com.br/Produto1/dp/XXXXX, 100
+plaintext
 
-https://www.amazon.com.br/Produto2/dp/XXXXX, 150
+https://www.amazon.com.br/Product1/dp/XXXXX, 100
+https://www.amazon.com.br/Product2/dp/XXXXX, 150
 
-    Compile e execute o projeto com dotnet build e dotnet run, respectivamente.
+    Compile and run the project with dotnet build and dotnet run, respectively.
 
-Instalando o navegador do Playwright
+Installing Playwright Browser
 
-    Faça o build da solução.
-    Abra o Powershell 6.0 ou superior.
-    Navegue até a pasta de compilação do projeto. Substitua <PATH_TO_BUILD_FOLDER> pelo caminho correto da pasta de compilação no seu computador.
-    cd "<PATH_TO_BUILD_FOLDER>"
-    Exemplo:
+    Build the solution.
+    Open PowerShell 6.0 or higher.
+    Navigate to the project's build folder. Replace <PATH_TO_BUILD_FOLDER> with the correct path to the build folder on your computer.
 
-    cd "C:\AmazonPriceTracker\AmazonPriceTracker\bin\Debug\net6.0"
+powershell
 
-    Execute o comando a seguir para instalar o navegador do Playwright:
+cd "<PATH_TO_BUILD_FOLDER>"
 
-    pwsh playwright.ps1 install
+Example:
 
-Após seguir estas etapas, o navegador do Playwright estará instalado e pronto para ser usado no projeto.
+powershell
 
-Pelo projeto compilado
+cd "C:\AmazonPriceTracker\AmazonPriceTracker\bin\Debug\net6.0"
 
-https://github.com/alanspindler/AmazonPriceTracker/blob/main/AmazonPriceTracker/Projecto%20Compilado.zip
+    Run the following command to install the Playwright browser:
 
-    Necessita do PowerShell 6.0
+powershell
 
-    Descompacte o arquivo Projeto Compilado.zip.
-    Edite o arquivo email_credentials.json com suas credenciais de e-mail do hotmail (usuário e senha)
-    Edite o arquivo email_recipients.txt com a lista de e-mails para os quais deseja enviar.
-    Edite o arquivo products.txt com os produtos que deseja verificar e o preço de alerta.
-    Execute o arquivo Instalar Playwright.bat.
-    Aguarde a instalação finalizar.
-    Execute o arquivo AmazonPriceTracker.exe.
+pwsh playwright.ps1 install
 
-Funcionalidades
+After following these steps, the Playwright browser will be installed and ready to use in the project.
 
-    Rastrear preços de produtos da Amazon.
-    Enviar e-mails de alerta quando o preço do produto estiver abaixo do valor desejado.    
-    Ler a lista de produtos e preços-alvo de um arquivo externo.
-    Ler a lista de destinatários de e-mail de um arquivo externo.
-    Utilizar credenciais de e-mail de um arquivo externo para maior segurança.
+For the compiled project
 
-Limitações
+Download Compiled Project
 
-    A implementação atual é específica para a Amazon Brasil.    
+    Requires PowerShell 6.0
+    Unzip the Compiled Project.zip file.
+    Edit the email_credentials.json file with your Hotmail email credentials (username and password).
+    Edit the email_recipients.txt file with the list of emails you want to send to.
+    Edit the products.txt file with the products you want to check and the alert price.
+    Run the Install Playwright.bat file.
+    Wait for the installation to finish.
+    Run the AmazonPriceTracker.exe file.
 
-Contribuindo
+Features
 
-Sinta-se à vontade para contribuir com melhorias ou correções de bugs. Faça um fork do projeto, crie uma branch, realize as alterações e envie um pull request.
-Licença
+    Track prices of Amazon products.
+    Send alert emails when the product price is below the desired value.
+    Read the list of products and target prices from an external file.
+    Read the list of email recipients from an external file.
+    Use email credentials from an external file for added security.
 
-Este projeto é licenciado sob a MIT License. Consulte o arquivo LICENSE.md para mais detalhes.
+Limitations
+
+    The current implementation is specific to Amazon Brazil.
+
+Contributing
+
+Feel free to contribute improvements or bug fixes. Fork the project, create a branch, make changes, and submit a pull request.
+
+License
+
+This project is licensed under the MIT License. See the LICENSE.md file for more details.
