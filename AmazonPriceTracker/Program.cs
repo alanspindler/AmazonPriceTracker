@@ -29,7 +29,7 @@ class AmazonPriceTracker
         // Verifica se o URL é da Kabum
         else if (url.Contains("kabum.com.br"))
         {
-            string? priceElement = null;            
+            string? priceElement = null;
             int elementos = await page.Locator(".finalPrice").CountAsync();
             if (elementos > 0)
             {
@@ -46,6 +46,27 @@ class AmazonPriceTracker
                 }
             }
         }
+
+        else if (url.Contains("store.playstation.com/pt-br"))
+        {
+            string? priceElement = null;
+            int elementos = await page.Locator("[class='psw-l-line-left psw-l-line-wrap']").CountAsync();
+            if (elementos > 0)
+            {
+                priceElement = await page.Locator("[class='psw-l-line-left psw-l-line-wrap']").TextContentAsync();
+            }
+
+            if (priceElement != null)
+            {
+                priceElement = priceElement.Replace("R$", "").Trim();
+
+                if (decimal.TryParse(priceElement, out decimal price))
+                {
+                    return price;
+                }
+            }
+        }
+
         return null;
     }
     private static (string Email, string Password) ReadEmailCredentials()
@@ -143,6 +164,27 @@ class AmazonPriceTracker
             var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
             var context = await browser.NewContextAsync(new() { UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36" });
             var page = await context.NewPageAsync();
+            await page.RouteAsync("**/*", (route) =>
+            {
+                var url = route.Request.Url;
+                if (url.Contains("https://aax-us-east-retail-direct.amazon.com/e/xsp/getAd?placementId") || url.Contains("https://unagi.amazon.com.br/1/events/com.amazon.csm.csa.prod") || url.Contains("https://completion.amazon.com.br/api/2017/suggestions") || url.Contains("https://unagi-na.amazon.com/1/events/com.amazon.eel.SponsoredProductsEventTracking.prod")) 
+                {
+                    return route.AbortAsync();
+                }
+                return route.ContinueAsync();
+            });
+            await page.RouteAsync("**/*.{png,jpg,jpeg}", (route) =>
+                {
+                    return route.AbortAsync();
+                });
+            await page.RouteAsync("https://www.amazon.com.br/dram/renderLazyLoaded", (route) =>
+            {
+                return route.AbortAsync();
+            });
+            await page.RouteAsync("https://aax-us-east-retail-direct.amazon.com/e/xsp/getAd?placementId", (route) =>
+            {
+                return route.AbortAsync();
+            });       
             foreach (var (productUrl, targetPrice) in productList)
             {
                 try
@@ -158,6 +200,10 @@ class AmazonPriceTracker
                     {
                         textProductName = await page.Locator("xpath=//div[@id='container-purchase']/div[1]/div/h1").TextContentAsync();
                     }
+                    else if (productUrl.Contains("store.playstation.com/pt-br/"))
+                    {
+                        textProductName = await page.Locator("[class='psw-m-b-5 psw-t-title-l psw-t-size-7 psw-l-line-break-word']").TextContentAsync();
+                    }
                     string productName = textProductName != null ? textProductName.ToString().Trim() : string.Empty;
                     if (currentPrice.HasValue && currentPrice.Value < targetPrice)
                     {
@@ -172,7 +218,7 @@ class AmazonPriceTracker
                     else
                     {
                         Log($"O preço do produto {productName} não atingiu o valor desejado de R${targetPrice}. Preço atual: R${currentPrice.Value}");
-                    }
+                    }                    
                 }
                 catch (Exception ex)
                 {
