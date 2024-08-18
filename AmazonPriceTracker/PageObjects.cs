@@ -10,7 +10,6 @@ namespace PageObjects
 
         public static string LabelKabumPrice = ".finalPrice";
         public static string LabelKabumProductName = "xpath=//div[@id='container-purchase']/div[1]/div/h1";
-
         
         public static string LabelPlaystationPrice = "[data-qa='mfeCtaMain#offer0#finalPrice']";        
         public static string LabelPlaystationProductName = "[data-qa='mfe-game-title#name']";
