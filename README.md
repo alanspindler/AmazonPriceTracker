@@ -1,6 +1,6 @@
 Virtual Stores Price Tracker
 
-Este projeto é um rastreador de preços de produtos de lojas como Amazon, Kabum, Stem, PS Store, entre outros, desenvolvido em C# e utilizando o Playwright. Ele verifica se o preço atual de uma lista de produtos está abaixo de um determinado valor e, se estiver, envia um e-mail de alerta para uma lista de destinatários. O processo é repetido a cada 30 minutos.
+Este projeto é um rastreador de preços de produtos de lojas como Amazon, Kabum, Steam, PS Store, entre outros, desenvolvido em C# e utilizando o Playwright. Ele verifica se o preço atual de uma lista de produtos está abaixo de um determinado valor e, se estiver, envia um e-mail de alerta para uma lista de destinatários. O processo é repetido a cada 30 minutos.
 
 Requisitos
 
