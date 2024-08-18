@@ -44,7 +44,6 @@ namespace Functions
                     if (price != null)
                     {
                         FormatedPrice = price.ToString();
-                        FormatedPrice = FormatedPrice.Insert(FormatedPrice.Length - 2, ".");
                     }
                     if (decimal.TryParse(FormatedPrice, out decimal DecimalPrice))
                     {

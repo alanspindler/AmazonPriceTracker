@@ -1,9 +1,6 @@
-﻿using System.Net;
-using System.Net.Mail;
-using System.Text.Json;
+﻿
 using Microsoft.Playwright;
-using File = System.IO.File;
-using System.Text.RegularExpressions;
+
 
 class AmazonPriceTracker : Functions.Functions
 {
