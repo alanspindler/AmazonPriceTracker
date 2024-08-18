@@ -1,6 +1,6 @@
-Amazon Price Tracker
+Virtual Stores Price Tracker
 
-Este projeto é um rastreador de preços de produtos da Amazon, desenvolvido em C# e utilizando o Playwright. Ele verifica se o preço atual de uma lista de produtos está abaixo de um determinado valor e, se estiver, envia um e-mail de alerta para uma lista de destinatários. O processo é repetido a cada 30 minutos.
+Este projeto é um rastreador de preços de produtos de lojas como Amazon, Kabum, Stem, PS Store, entre outros, desenvolvido em C# e utilizando o Playwright. Ele verifica se o preço atual de uma lista de produtos está abaixo de um determinado valor e, se estiver, envia um e-mail de alerta para uma lista de destinatários. O processo é repetido a cada 30 minutos.
 
 Requisitos
 
@@ -33,6 +33,10 @@ destinatario2@example.com
 https://www.amazon.com.br/Produto1/dp/XXXXX, 100
 
 https://www.amazon.com.br/Produto2/dp/XXXXX, 150
+
+https://store.steampowered.com/app/1364780/Street_Fighter_6/, 90
+
+https://store.playstation.com/pt-br/product/UP0102-PPSA02632_00-SF600000STANDARD, 90
 
     Compile e execute o projeto com dotnet build e dotnet run, respectivamente.
 
@@ -68,7 +72,7 @@ https://github.com/alanspindler/AmazonPriceTracker/blob/main/AmazonPriceTracker/
 
 Funcionalidades
 
-    Rastrear preços de produtos da Amazon.
+    Rastrear preços de produtos da Amazon, Kabum, Steam e PS Store.
     Enviar e-mails de alerta quando o preço do produto estiver abaixo do valor desejado.    
     Ler a lista de produtos e preços-alvo de um arquivo externo.
     Ler a lista de destinatários de e-mail de um arquivo externo.
@@ -76,7 +80,7 @@ Funcionalidades
 
 Limitações
 
-    A implementação atual é específica para a Amazon Brasil.    
+    A implementação atual é específica para a lojas do Brasil.    
 
 Contribuindo
 
